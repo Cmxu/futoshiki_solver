@@ -56,22 +56,37 @@ def add(x, y, n):
 	known_board[x][y] = n
 	completed_squares[x][y] = True
 
-def poss():
-	parr = [[[i+1 for i in range(N)] for j in range(N)] for k in range(N)]
-	for i in range(N):
-		for j in range(N):
-			if known_board[i][j] != 0:
-				for k in range(N):
-					with suppress(ValueError, AttributeError):
-						parr[i][k].remove(known_board[i][j])
-					with suppress(ValueError, AttributeError):
-						parr[k][j].remove(known_board[i][j])
-				parr[i][j] = [known_board[i][j]]
+def poss(ps = []):
+	if len(ps) == 0:
+		parr = [[[i+1 for i in range(N)] for j in range(N)] for k in range(N)]
+		for i in range(N):
+			for j in range(N):
+				if known_board[i][j] != 0:
+					for k in range(N):
+						with suppress(ValueError, AttributeError):
+							parr[i][k].remove(known_board[i][j])
+						with suppress(ValueError, AttributeError):
+							parr[k][j].remove(known_board[i][j])
+					parr[i][j] = [known_board[i][j]]
+	else:
+		parr = ps
+		for i in range(N):
+			for j in range(N):
+				if completed_squares[i][j]:
+					for k in range(N):
+						with suppress(ValueError, AttributeError):
+							parr[i][k].remove(known_board[i][j])
+						with suppress(ValueError, AttributeError):
+							parr[k][j].remove(known_board[i][j])
+					parr[i][j] = [known_board[i][j]]
 	return parr
 
 def pr_arr(arr):
+	#for i in range(N):
+	#	print(*[[str(i) if i in a else '_' for i in range(1,N+1)] for a in arr[i]], sep = '\t')
 	for i in range(N):
-		print(*[[str(i) if i in a else '_' for i in range(1,N+1)] for a in arr[i]], sep = '\t')
+		print(*[''.join([str(i) if i in a else '-' for i in range(1, N+1)]) for a in arr[i]], sep = '\t')
+	
 
 def pr_brd(nd = -1):
 	for i in range(N):
@@ -171,8 +186,9 @@ def solve(verbose = False):
 		pr_brd(done)
 		print('='*(len('\t'.expandtabs())+N))
 	stal_count = 0
+	ps = poss()
 	while done != N*N:
-		ps = poss()
+		ps = poss(ps)
 		ps = sol_ineq(ps)
 		ps = sol_al(ps)
 		find_al(ps)
